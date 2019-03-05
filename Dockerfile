@@ -72,4 +72,16 @@ RUN cd ~ && mkdir ~/.android && echo '### User Sources for Android SDK Manager' 
         "system-images;android-19;google_apis;armeabi-v7a" \
         "extras;android;m2repository"
         
+RUN groupadd --gid 3434 circleci \
+  && useradd --uid 3434 --gid circleci --shell /bin/bash --create-home circleci \
+  && echo 'circleci ALL=NOPASSWD: ALL' >> /etc/sudoers.d/50-circleci \
+  && echo 'Defaults    env_keep += "DEBIAN_FRONTEND"' >> /etc/sudoers.d/env_keep
+
 USER circleci
+
+CMD ["/bin/sh"]
+
+# Now commands run as user `circleci`
+
+# Switching user can confuse Docker's idea of $HOME, so we set it explicitly
+ENV HOME /home/circleci
